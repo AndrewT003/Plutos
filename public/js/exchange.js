@@ -329,8 +329,8 @@ async function handleFormSubmit(e) {
 
     const data = await res.json();
 
-    if (data.error) {
-      console.error('Ошибка:', data.error);
+    if (data.error || !data.success) {
+      showErrorBox(data.error || 'Произошла ошибка при отправке заявки');
       return;
     }
 
@@ -344,10 +344,14 @@ async function handleFormSubmit(e) {
     // Очищаем форму
     exchangeForm.reset();
 
+    // Оновлюємо розрахунок після очищення форми
+    updateCalculation();
+
     // Скрываем сообщение через 5 секунд
     setTimeout(() => resultBox.classList.remove("show"), 5000);
   } catch (err) {
     console.error("Ошибка отправки:", err);
+    showErrorBox('Не удалось отправить заявку. Проверьте подключение к интернету.');
   }
 }
 

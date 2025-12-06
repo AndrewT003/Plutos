@@ -199,20 +199,27 @@ app.get("/api/rates", (req, res) => {
 });
 
 app.post("/exchange", async (req, res) => {
-    const { telegram_nick, from_currency, amount, amount_currency, mode } = req.body;
+    try {
+        const { telegram_nick, from_currency, amount, amount_currency, mode } = req.body;
 
-    if (!telegram_nick || !from_currency || !amount) {
-        return res.json({ error: "Пожалуйста заполните все поля" });
-    }
+        if (!telegram_nick || !from_currency || !amount) {
+            return res.json({
+                success: false,
+                error: "Пожалуйста заполните все поля"
+            });
+        }
 
-    if (!exchangeRates[from_currency]) {
-        return res.json({ error: "Неверная валюта" });
-    }
+        if (!exchangeRates[from_currency]) {
+            return res.json({
+                success: false,
+                error: "Неверная валюта"
+            });
+        }
 
-    const operationType = mode === "sell" ? "💰 Продаю" : "💵 Покупаю";
-    const operationText = mode === "sell" ? "продажу" : "покупку";
+        const operationType = mode === "sell" ? "💰 Продаю" : "💵 Покупаю";
+        const operationText = mode === "sell" ? "продажу" : "покупку";
 
-    const message = `
+        const message = `
     📱 Нова заявка на ${operationText}
 
     👤 Телеграм: @${telegram_nick}
@@ -220,25 +227,32 @@ app.post("/exchange", async (req, res) => {
     💵 Сума: ${amount} ${amount_currency || 'USD'}
     `;
 
-    if (!isMessagingEnabled) {
-        console.log("📋 Заявка отримана (повідомлення не відправлено):", message);
-        return res.json({
-            success: false,
-            error: "Відправка повідомлень тимчасово недоступна. Спробуйте пізніше або зв'яжіться з нами напряму.",
-        });
-    }
+        if (!isMessagingEnabled) {
+            console.log("📋 Заявка отримана (повідомлення не відправлено):", message);
+            return res.json({
+                success: false,
+                error: "Відправка повідомлень тимчасово недоступна. Спробуйте пізніше або зв'яжіться з нами напряму.",
+            });
+        }
 
-    const sent = await sendTelegramMessage(message);
+        const sent = await sendTelegramMessage(message);
 
-    if (sent) {
-        res.json({
-            success: true,
-            message: "Заявка успішно відправлена! Ми скоро звʼяжемося з вами.",
-        });
-    } else {
-        res.json({
+        if (sent) {
+            res.json({
+                success: true,
+                message: "Заявка успішно відправлена! Ми скоро звʼяжемося з вами.",
+            });
+        } else {
+            res.json({
+                success: false,
+                error: "Помилка відправки заявки. Будь ласка, спробуйте ще раз.",
+            });
+        }
+    } catch (err) {
+        console.error("❌ Помилка в /exchange endpoint:", err);
+        res.status(500).json({
             success: false,
-            error: "Помилка відправки заявки. Будь ласка, спробуйте ще раз.",
+            error: "Внутрішня помилка сервера. Спробуйте пізніше.",
         });
     }
 });
@@ -247,8 +261,29 @@ app.post("/exchange", async (req, res) => {
 // ===========================
 // 📌 СТОРІНКИ + СТАТИКА
 // ===========================
-app.get("/", (req, res) => res.render("index", { title: "Collect & Exchange" }));
 app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res, next) => {
+    res.render("index", { title: "Collect & Exchange" }, (err, html) => {
+        if (err) {
+            console.error("❌ Помилка при рендерингу головної сторінки:", err);
+            console.error("Stack trace:", err.stack);
+            return next(err);
+        }
+        res.send(html);
+    });
+});
+
+// ===========================
+// 📌 ОБРОБКА ПОМИЛОК
+// ===========================
+app.use((err, req, res, next) => {
+    console.error("❌ Глобальна помилка:", err.stack);
+    res.status(500).json({
+        success: false,
+        error: "Внутрішня помилка сервера"
+    });
+});
 
 
 // ===========================
