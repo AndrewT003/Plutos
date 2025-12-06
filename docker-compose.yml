@@ -6,15 +6,16 @@ services:
     container_name: plutos-exchange
     ports:
       - "3000:3000"
-    env_file:
-      - .env
+    environment:
+      - API_ID=${API_ID}
+      - API_HASH=${API_HASH}
+      - SESSION=${SESSION}
+      - TARGET_USER=${TARGET_USER}
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-3000}
     volumes:
       - ./public:/app/public
       - ./views:/app/views
+      - ./.env:/app/.env:ro
     restart: unless-stopped
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+    network_mode: "host"
