@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\Users\\kaktu\\Desktop\\clone 1 site\")",
+      "Bash(dir \"C:\\Users\\kaktu\\Desktop\\clone 1 site\\views\")",
+      "Bash(dir:*)",
+      "Bash(npm install:*)",
+      "Bash(python3:*)",
+      "Bash(npm start)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(del nul)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

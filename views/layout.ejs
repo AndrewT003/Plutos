@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plutos Exchange</title>
+  <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>">
+  <script src="/js/exchange.js"></script>
+  <script src="/js/transitions.js" defer></script>
+</head>
+<body>
+  <!-- Закріплена картинка зліва -->
+  <div class="side-image left-image">
+    <img src="/images/13.png" alt="Left decoration">
+  </div>
+
+  <!-- Закріплена картинка справа -->
+  <div class="side-image right-image">
+    <img src="/images/10.png" alt="Right decoration">
+  </div>
+
+  <%- include('header') %>
+
+  <main>
+    <div class="container">
+      <%- body %>
+    </div>
+  </main>
+
+  <%- include('footer') %>
+</body>
+</html>

@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: clone-1-site
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    volumes:
+      - ./public:/app/public
+      - ./views:/app/views
+    restart: unless-stopped

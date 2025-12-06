@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plutos Exchange</title>
+  <link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+  <link rel="stylesheet" href="/css/style.css?v=<%= Date.now() %>">
+  <script src="/js/exchange.js"></script>
+  <script src="/js/transitions.js" defer></script>
+</head>
+<body>
+  <!-- Закріплена картинка зліва -->
+  <div class="side-image left-image">
+    <img src="/images/13.png" alt="Left decoration">
+  </div>
+
+  <!-- Закріплена картинка справа -->
+  <div class="side-image right-image">
+    <img src="/images/10.png" alt="Right decoration">
+  </div>
+
+  <%- include('header') %>
+
+  <main>
+    <div class="container">
+      <section class="hero-section" id="top">
+        <!-- Один великий блок розділений на 2 половини -->
+        <div class="hero-unified-block">
+          <!-- Діагональна розділювальна лінія -->
+          <div class="hero-divider-line"></div>
+
+          <!-- Ліва половина - Обменивай с Легкостью -->
+          <div class="hero-unified-side left">
+            <h1>Обменивай с Легкостью!</h1>
+            <p>Самый безопасный и быстрый обменник цифровых активов</p>
+            <div class="hero-image" style="background-image: url('/images/sticker.png');"></div>
+            <a href="#exchange" class="btn">Начни обменивать</a>
+          </div>
+
+          <!-- Права половина - Конвертор валют -->
+          <div class="hero-unified-side right">
+            <h2 class="converter-title">Конвертор валют</h2>
+            <!-- Вибір валюти -->
+            <div class="converter-input">
+              <div class="custom-dropdown">
+                <div class="dropdown-toggle" id="dropdownToggle">
+                  <span class="dropdown-value">BTC (Bitcoin)</span>
+                  <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                  <div class="dropdown-item" data-value="BTC">BTC (Bitcoin)</div>
+                  <div class="dropdown-item" data-value="ETH">ETH (Ethereum)</div>
+                  <div class="dropdown-item" data-value="USDT">USDT (Tether)</div>
+                  <div class="dropdown-item" data-value="USDC">USDC (USD Coin)</div>
+                  <div class="dropdown-item" data-value="BNB">BNB (Binance)</div>
+                  <div class="dropdown-item" data-value="LTC">LTC (Litecoin)</div>
+                  <div class="dropdown-item" data-value="TRX">TRX (Tron)</div>
+                </div>
+              </div>
+              <input type="hidden" id="previewFromCurrency" value="BTC">
+            </div>
+
+            <!-- Ціна в USD -->
+            <div class="converter-output">
+              <img src="/images/44.png" alt="Exchange" class="exchange-icon-arrows">
+              <div class="price-display">
+                <span id="previewToAmount" class="price-value">Загрузка...</span>
+                <span class="price-currency">USD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="instruction-image-block">
+        <img src="/images/instruction.png" alt="Инструкция по обмену крипто" class="instruction-image">
+      </div>
+
+      <h2 style="text-align: center; color: #f4b860; font-size: 2.5rem; margin: 3rem 0; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);">Наши преимущества</h2>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon"><img src="/images/30.png" alt="Молниеносная Скорость" class="card-icon-img"></div>
+          <h3>Молниеносная Скорость</h3>
+          <p>Обмен за считаные секунды. Не трать время на долгие ожидания!</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><img src="/images/31.png" alt="Максимальная Безопасность" class="card-icon-img"></div>
+          <h3>Максимальная Безопасность</h3>
+          <p>Твои средства защищены самыми современными технологиями шифрования.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><img src="/images/3.png" alt="Низкие Комиссии" class="card-icon-img"></div>
+          <h3>Низкие Комиссии</h3>
+          <p>Самые маленькие комиссии на рынке. Больше денег для тебя!</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><img src="/images/14.png" alt="Без Границ" class="card-icon-img"></div>
+          <h3>Без Границ</h3>
+          <p>Обменивай валюты в любой части мира 24/7.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><img src="/images/12.png" alt="Легко Использовать" class="card-icon-img"></div>
+          <h3>Легко Использовать</h3>
+          <p>Простой интерфейс для новичков и профессионалов.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><img src="/images/15.png" alt="Профессиональная Поддержка" class="card-icon-img"></div>
+          <h3>Профессиональная Поддержка</h3>
+          <p>Команда экспертов готова помочь 24/7.</p>
+        </div>
+      </div>
+
+      <section id="exchange" class="exchange-container">
+        <h2><img src="/images/33.png" alt="Обменник" class="exchange-icon"> Обменник</h2>
+
+        <!-- Кнопки переключения Купить/Продать -->
+        <div class="exchange-mode-buttons">
+          <button type="button" class="mode-btn active" id="buyBtn" data-mode="buy">Купить</button>
+          <button type="button" class="mode-btn" id="sellBtn" data-mode="sell">Продать</button>
+        </div>
+
+        <div id="errorBox" class="error-box">
+          <div class="error-content">
+            <span class="error-close">&times;</span>
+            <h3>⚠️ Ошибка!</h3>
+            <p id="errorMessage"></p>
+          </div>
+        </div>
+
+        <div class="exchange-form-wrapper">
+          <form id="exchangeForm" class="exchange-form">
+          <div class="form-group">
+            <label for="telegram_nick">Твой Telegram ник:</label>
+            <input type="text" id="telegram_nick" name="telegram_nick" placeholder="@username">
+            <span id="telegram_nick_error" class="error-text"></span>
+          </div>
+
+          <div class="exchange-row">
+            <div class="form-group">
+              <label for="from_currency" id="currencyLabel">Покупаю:</label>
+              <select id="from_currency" name="from_currency" class="currency-dropdown">
+                <option value="">Выбери валюту</option>
+                <option value="BTC">BTC (Bitcoin)</option>
+                <option value="ETH">ETH (Ethereum)</option>
+                <option value="USDT">USDT (Tether)</option>
+                <option value="USDC">USDC (USD Coin)</option>
+                <option value="BNB">BNB (Binance)</option>
+                <option value="LTC">LTC (Litecoin)</option>
+                <option value="TRX">TRX (Tron)</option>
+              </select>
+              <span id="from_currency_error" class="error-text"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="amount">Сумма:</label>
+              <div class="amount-input-row">
+                <select id="amount_currency" name="amount_currency" class="amount-currency-select currency-dropdown">
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="RUB">RUB</option>
+                </select>
+                <input type="number" id="amount" name="amount" placeholder="0.00" step="0.00001">
+              </div>
+              <span id="amount_error" class="error-text"></span>
+            </div>
+          </div>
+
+          <!-- Лейбл з розрахунком -->
+          <div id="calculationLabel" class="calculation-label"></div>
+
+          <button type="submit" class="btn exchange-btn">Отправить заявку</button>
+        </form>
+
+        <div id="resultBox" class="result-box">
+          <button class="result-close" id="resultClose">&times;</button>
+          <h3>✅ Успешно!</h3>
+          <p id="resultMessage">Администратор свяжется с вами в Telegram</p>
+        </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <%- include('footer') %>
+</body>
+</html>
