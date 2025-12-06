@@ -313,8 +313,9 @@ app.use((err, req, res, next) => {
 // ===========================
 // 📌 START SERVER
 // ===========================
-app.listen(PORT, () => {
-    console.log(`🚀 Server running: http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+    console.log(`🌐 Accessible at: http://localhost:${PORT}`);
     console.log(`📁 Views directory: ${path.join(__dirname, "views")}`);
     console.log(`📁 Public directory: ${path.join(__dirname, "public")}`);
     console.log(`✅ EJS view engine: ${app.get("view engine")}`);
