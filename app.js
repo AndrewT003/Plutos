@@ -96,6 +96,12 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Логування всіх запитів
+app.use((req, res, next) => {
+    console.log(`📥 ${req.method} ${req.url}`);
+    next();
+});
+
 let exchangeRates = {
     BTC: 45000,
     ETH: 2500,
@@ -264,12 +270,24 @@ app.post("/exchange", async (req, res) => {
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res, next) => {
+    console.log("🏠 Обробка запиту на головну сторінку");
+    console.log("🔍 Рендеримо: index.ejs");
+
     res.render("index", { title: "Collect & Exchange" }, (err, html) => {
         if (err) {
-            console.error("❌ Помилка при рендерингу головної сторінки:", err);
-            console.error("Stack trace:", err.stack);
-            return next(err);
+            console.error("❌ Помилка при рендерингу головної сторінки:");
+            console.error("   Тип помилки:", err.name);
+            console.error("   Повідомлення:", err.message);
+            console.error("   Stack trace:", err.stack);
+
+            // Повертаємо детальну помилку клієнту
+            return res.status(500).send(`
+                <h1>Internal Server Error</h1>
+                <h2>${err.message}</h2>
+                <pre>${err.stack}</pre>
+            `);
         }
+        console.log("✅ Сторінка успішно відрендерена");
         res.send(html);
     });
 });
@@ -278,17 +296,26 @@ app.get("/", (req, res, next) => {
 // 📌 ОБРОБКА ПОМИЛОК
 // ===========================
 app.use((err, req, res, next) => {
-    console.error("❌ Глобальна помилка:", err.stack);
-    res.status(500).json({
-        success: false,
-        error: "Внутрішня помилка сервера"
-    });
+    console.error("❌ Глобальна помилка:");
+    console.error("   URL:", req.url);
+    console.error("   Method:", req.method);
+    console.error("   Error:", err.message);
+    console.error("   Stack:", err.stack);
+
+    res.status(500).send(`
+        <h1>Global Error Handler</h1>
+        <h2>${err.message}</h2>
+        <pre>${err.stack}</pre>
+    `);
 });
 
 
 // ===========================
 // 📌 START SERVER
 // ===========================
-app.listen(PORT, () =>
-    console.log(`🚀 Server running: http://localhost:${PORT}`)
-);
+app.listen(PORT, () => {
+    console.log(`🚀 Server running: http://localhost:${PORT}`);
+    console.log(`📁 Views directory: ${path.join(__dirname, "views")}`);
+    console.log(`📁 Public directory: ${path.join(__dirname, "public")}`);
+    console.log(`✅ EJS view engine: ${app.get("view engine")}`);
+});
