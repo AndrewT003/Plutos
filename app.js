@@ -17,38 +17,54 @@ const apiId = Number(process.env.API_ID);
 const apiHash = process.env.API_HASH;
 const targetUser = process.env.TARGET_USER; // @tima_003
 
+let isMessagingEnabled = false;
+let client = null;
+
 if (!apiId || !apiHash || !targetUser) {
-    console.error("❌ Помилка: API_ID, API_HASH або TARGET_USER відсутні у .env");
-    process.exit(1);
+    console.warn("⚠️  Увага: API_ID, API_HASH або TARGET_USER відсутні у .env");
+    console.warn("⚠️  Сайт працюватиме, але відправка повідомлень буде недоступна");
+} else {
+    const session = new StringSession(process.env.SESSION || "");
+    client = new TelegramClient(session, apiId, apiHash, {
+        connectionRetries: 5,
+    });
 }
 
-const session = new StringSession(process.env.SESSION || "");
-const client = new TelegramClient(session, apiId, apiHash, {
-    connectionRetries: 5,
-});
-
 (async () => {
-    console.log("🔄 Підключення Telegram клієнта...");
-
-    if (!process.env.SESSION || process.env.SESSION.length < 10) {
-        console.log("📱 Перше авторизування Telegram:");
-
-        await client.start({
-            phoneNumber: async () => await input.text("Введи номер телефону: "),
-            password: async () => await input.text("Пароль 2FA (якщо є): "),
-            phoneCode: async () => await input.text("Код із Telegram: "),
-            onError: (err) => console.log(err),
-        });
-
-        console.log("\n====================================");
-        console.log("🔐 Збережи SESSION у .env:");
-        console.log('SESSION="' + client.session.save() + '"');
-        console.log("====================================\n");
-    } else {
-        await client.connect();
+    if (!client) {
+        console.log("ℹ️  Telegram клієнт не налаштовано. Сервер запускається без функції повідомлень.");
+        return;
     }
 
-    console.log("✅ Telegram клієнт готовий!");
+    try {
+        console.log("🔄 Підключення Telegram клієнта...");
+
+        if (!process.env.SESSION || process.env.SESSION.length < 10) {
+            console.log("📱 Перше авторизування Telegram:");
+            console.log("💡 Натисніть Ctrl+C щоб відхилити авторизацію і запустити сайт без повідомлень\n");
+
+            await client.start({
+                phoneNumber: async () => await input.text("Введи номер телефону: "),
+                password: async () => await input.text("Пароль 2FA (якщо є): "),
+                phoneCode: async () => await input.text("Код із Telegram: "),
+                onError: (err) => console.log(err),
+            });
+
+            console.log("\n====================================");
+            console.log("🔐 Збережи SESSION у .env:");
+            console.log('SESSION="' + client.session.save() + '"');
+            console.log("====================================\n");
+        } else {
+            await client.connect();
+        }
+
+        isMessagingEnabled = true;
+        console.log("✅ Telegram клієнт готовий! Відправка повідомлень увімкнена.");
+    } catch (err) {
+        console.warn("⚠️  Помилка підключення Telegram:", err.message);
+        console.warn("⚠️  Сервер запускається без функції відправки повідомлень.");
+        isMessagingEnabled = false;
+    }
 })();
 
 
@@ -56,11 +72,18 @@ const client = new TelegramClient(session, apiId, apiHash, {
 // 📌 ФУНКЦІЯ ВІДПРАВКИ ПОВІДОМЛЕНЬ
 // ===========================
 async function sendTelegramMessage(messageText) {
+    if (!isMessagingEnabled || !client) {
+        console.warn("⚠️  Відправка повідомлень недоступна (Telegram клієнт не підключено)");
+        return false;
+    }
+
     try {
         await client.sendMessage(targetUser, { message: messageText });
         console.log("📨 Повідомлення надіслано →", targetUser);
+        return true;
     } catch (err) {
         console.error("❌ Помилка при надсиланні:", err.message);
+        return false;
     }
 }
 
@@ -197,13 +220,27 @@ app.post("/exchange", async (req, res) => {
     💵 Сума: ${amount} ${amount_currency || 'USD'}
     `;
 
+    if (!isMessagingEnabled) {
+        console.log("📋 Заявка отримана (повідомлення не відправлено):", message);
+        return res.json({
+            success: false,
+            error: "Відправка повідомлень тимчасово недоступна. Спробуйте пізніше або зв'яжіться з нами напряму.",
+        });
+    }
 
-    await sendTelegramMessage(message);
+    const sent = await sendTelegramMessage(message);
 
-    res.json({
-        success: true,
-        message: "Заявка успішно відправлена! Ми скоро звʼяжемося з вами.",
-    });
+    if (sent) {
+        res.json({
+            success: true,
+            message: "Заявка успішно відправлена! Ми скоро звʼяжемося з вами.",
+        });
+    } else {
+        res.json({
+            success: false,
+            error: "Помилка відправки заявки. Будь ласка, спробуйте ще раз.",
+        });
+    }
 });
 
 

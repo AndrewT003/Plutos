@@ -9,7 +9,8 @@
       "Bash(npm start)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(del nul)"
+      "Bash(del nul)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
